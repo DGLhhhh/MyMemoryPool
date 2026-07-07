@@ -3,7 +3,7 @@
 
 // ####### 应用示例 ######
 
-struct Praticle
+struct Particle
 {
 	float x, y, z;
 	int life;
@@ -19,14 +19,14 @@ struct Praticle
 };
 
 // 创建一个全局的内存池对象，管理Praticle对象的内存分配和释放
-static MyMemoryPool m_memorypool(sizeof(Praticle), 4096);
+static MyMemoryPool m_memorypool(sizeof(Particle), 4096);
 
 // 重载new和delete运算符，类外实现
-void* Praticle::operator new(std::size_t size)
+void* Particle::operator new(std::size_t size)
 {
 	return m_memorypool.allocate();
 }
-void Praticle::operator delete(void* p) noexcept
+void Particle::operator delete(void* p) noexcept
 {
 	m_memorypool.deallocate(p);
 }
@@ -34,15 +34,27 @@ void Praticle::operator delete(void* p) noexcept
 int main()
 {
 	// 
-	std::vector<Praticle*> particles;
+	std::vector<Particle*> particles;
 	particles.reserve(10000);
 
 	for (int i = 0; i < 10000; i++)
 	{
-		Praticle* p = new Praticle{ 0,0,0,0 };
+		Particle* p = new Particle{ 0,0,0,0 };
 		particles.push_back(p);
 	}
 
+	/*for (std::vector<Particle*>::iterator it = particles.begin();
+		it != particles.end(); ++it) {
+		delete* it;         // 标准迭代器形式
+	}*/
+	/*for (auto it = particles.begin(); it != particles.end(); it++)
+	{
+		delete *it;         // 迭代器形式
+	}*/
+	/*for (size_t i = 0; i < particles.size(); ++i) {
+		delete particles[i]; // 下标形式
+	}*/
+	
 	//// 执行业务
 	for(auto p : particles)
 	{
